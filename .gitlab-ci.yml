@@ -1,0 +1,34 @@
+image: docker
+
+services:
+  - docker:dind
+
+#  run command before start
+before_script:
+  # update
+  - apk update
+  # export variables
+  - export
+  #login in docker
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  # pull latest image
+  - docker pull registry.gitlab.com/viktor0018/skillbox:latest
+
+stages:
+  - build
+  - test
+
+# Build stage
+Build:
+  stage: build
+  script:
+    - docker build --cache-from registry.gitlab.com/viktor0018/skillbox --tag registry.gitlab.com/viktor0018/skillbox:$CI_BUILD_REF --tag registry.gitlab.com/viktor0018/skillbox:latest .
+    - docker push registry.gitlab.com/viktor0018/skillbox:$CI_BUILD_REF
+    - docker push registry.gitlab.com/viktor0018/skillbox:latest
+
+# Test stage
+Test:
+  stage: test
+  script:
+    # run test
+    - docker run registry.gitlab.com/viktor0018/skillbox:latest yarn test

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skillbox
+  labels:
+    app: skillbox
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: skillbox
+  template:
+    metadata:
+      labels:
+        app: skillbox
+    spec:
+      containers:
+        - name: skillbox
+          image: registry.gitlab.com/viktor0018/skillbox:latest
+          ports:
+            - containerPort: 3000
